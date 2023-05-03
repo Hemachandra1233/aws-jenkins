@@ -1,0 +1,46 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nodejs-pipeline
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nodejs-app
+  name: nodejs-deploy
+  namespace: nodejs-pipeline
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nodejs-app
+  template:
+    metadata:
+      labels:
+        app: nodejs-app
+    spec:
+      containers:
+      - image: hemachandra1019/jenkins-nodejs:<TAG>
+        imagePullPolicy: Always
+        name: myweb
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: nodejs-app
+  name: nodejs-svc
+  namespace: nodejs-pipeline
+spec:
+  ports:
+  - nodePort: 32333
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: myweb
+  type: NodePort
