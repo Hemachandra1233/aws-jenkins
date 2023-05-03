@@ -26,14 +26,12 @@ pipeline {
             agent any
             steps {
                 sh 'zip -r app.zip *'
-                sh 'curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"'
-                sh 'unzip awscliv2.zip'
-                sh './aws/install'
             }
         }
    
 
     stage('Deploy to AWS Lambda') {
+            agent any
             steps {
                 withCredentials([
                     string(credentialsId: 'aws-access-key-id', variable: 'AWS_ACCESS_KEY_ID'),
