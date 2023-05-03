@@ -12,7 +12,12 @@ spec:
   - name: kubectl
     image: joshendriks/alpine-k8s
     command:
-    - /bin/cat
+    - /bin/sh
+    - -c
+    - |
+      apk add --update --no-cache zip unzip
+    #command:
+    #- /bin/cat
     tty: true    
   - name: kaniko
     image: gcr.io/kaniko-project/executor:debug
