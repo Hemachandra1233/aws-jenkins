@@ -16,30 +16,22 @@ pipeline {
       }
     }
 
-    stage('Kaniko Build & Push Image') {
-      steps {
-        container('kaniko') {
-          script {
-            sh '''
-            /kaniko/executor --dockerfile `pwd`/Dockerfile \
-                             --context `pwd` \
-                             --destination=hemachandra1019/jenkins-nodejs:${BUILD_NUMBER}
-            '''
-          }
+    stage('Package Application') {
+            steps {
+                sh 'zip -r app.zip *'
+            }
         }
-      }
-    }
 
-    stage('Deploy App to Kubernetes') {     
-      steps {
-        container('kubectl') {
-          withCredentials([file(credentialsId: 'mykubeconfig', variable: 'KUBECONFIG')]) {
-            sh 'sed -i "s/<TAG>/${BUILD_NUMBER}/" deploy-svc.yaml'
-            sh 'kubectl apply -f deploy-svc.yaml'
-          }
+    stage('Deploy to AWS Lambda') {
+            steps {
+                withCredentials([
+                    awsAccessKeyId(credentialsId: 'aws-access-key-id', variable: 'AWS_ACCESS_KEY_ID'),
+                    awsSecretAccessKey(credentialsId: 'aws-secret-access-key', variable: 'AWS_SECRET_ACCESS_KEY')
+                ]) {
+                    sh "aws lambda update-function-code --function-name ${env.LAMBDA_FUNCTION_NAME} --zip-file fileb://app.zip"
+                }
+            }
         }
-      }
-    }
   
   }
 }
