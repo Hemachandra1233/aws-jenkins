@@ -17,6 +17,7 @@ pipeline {
     }
 
     stage('Package Application') {
+            agent any
             steps {
                 sh 'zip -r app.zip *'
             }
