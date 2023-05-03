@@ -16,8 +16,7 @@ spec:
     - -c
     - |
       apk add --update --no-cache zip unzip
-    #command:
-    #- /bin/cat
+    
     tty: true    
   - name: kaniko
     image: gcr.io/kaniko-project/executor:debug
